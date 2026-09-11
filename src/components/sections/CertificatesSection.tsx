@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type FC } from 'react'
+import { createPortal } from 'react-dom'
 import { motion, useReducedMotion } from 'framer-motion'
 import { Award, Maximize2, X } from 'lucide-react'
 import type { Certificate } from '../../lib/supabase'
@@ -58,9 +59,9 @@ const CertificatesSection: FC<CertificatesSectionProps> = ({ certificates }) => 
     >
       <div className="pp-container">
         <SectionHeading
-          eyebrow="Certificates"
-          title="Credentials and continued learning"
-          subtitle="Selected certifications and course completions. Open any certificate to view it in detail."
+          eyebrow="05 / Continuing the curiosity"
+          title="Never done learning."
+          subtitle="Certifications and coursework along the way. Select a certificate to take a closer look."
           icon={Award}
         />
         <div className="pp-certificates-grid">
@@ -102,9 +103,9 @@ const CertificatesSection: FC<CertificatesSectionProps> = ({ certificates }) => 
         </div>
       </div>
 
-      {selectedCertificate?.image_url && (
+      {selectedCertificate?.image_url && createPortal(
         <div
-          className="pp-certificate-modal"
+          className="portfolio-public pp-certificate-modal"
           role="dialog"
           aria-modal="true"
           aria-labelledby="certificate-dialog-title"
@@ -132,7 +133,8 @@ const CertificatesSection: FC<CertificatesSectionProps> = ({ certificates }) => 
               <img src={selectedCertificate.image_url} alt={`${selectedCertificate.name} certificate`} />
             </div>
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
     </motion.section>
   )

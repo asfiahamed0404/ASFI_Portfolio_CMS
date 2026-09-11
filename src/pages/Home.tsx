@@ -9,10 +9,9 @@ import {
 } from 'react'
 import { motion, useReducedMotion, type MotionProps } from 'framer-motion'
 import {
-  ArrowRight,
+  ArrowDown,
+  ArrowUpRight,
   BriefcaseBusiness,
-  ChevronLeft,
-  ChevronRight,
   Code2,
   Database,
   Download,
@@ -31,16 +30,15 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 
-import asfiPortrait from '../../Asfi.png'
-import logo from '../assets/logo.png'
-import AmbientOrbs from '../components/AmbientOrbs'
+import Portrait from '../components/Portrait'
+import ProjectDiagram from '../components/ProjectDiagram'
 import BackToTop from '../components/BackToTop'
 import SectionHeading from '../components/SectionHeading'
 import CertificatesSection from '../components/sections/CertificatesSection'
 import { usePortfolioData } from '../hooks/usePortfolioData'
 import { removeAppreciation, submitAppreciation } from '../lib/supabase'
 import type { Project, SiteContent, Skill, Social } from '../lib/supabase'
-import '../styles/portfolio.css'
+import '../styles/editorial.css'
 
 const VISITOR_KEY = 'asfi_visitor_id'
 const APPRECIATED_KEY = 'asfi_appreciated'
@@ -50,12 +48,12 @@ const NAV_ACTIVATION_GAP = 16
 const ABOUT_FOCUS_AREAS = [
   {
     title: 'Machine learning workflows',
-    description: 'End-to-end pipelines: data preparation, training, evaluation, and monitoring.',
+    description: 'From document search to viewership forecasting: preparing data, building models, and connecting them to useful applications.',
     icon: Workflow,
   },
   {
     title: 'Full-stack applications',
-    description: 'Production-ready web applications with clean APIs, scalable backends, and thoughtful user experiences.',
+    description: 'Connected experiences with real-time messaging, content management, and the APIs that keep them running.',
     icon: Layers3,
   },
 ] as const
@@ -197,6 +195,7 @@ interface NavProps {
   hasProjects: boolean
   hasSkills: boolean
   hasCertificates: boolean
+  hasContact: boolean
   resumeUrl: string
 }
 
@@ -206,6 +205,7 @@ const Nav: FC<NavProps> = ({
   hasProjects,
   hasSkills,
   hasCertificates,
+  hasContact,
   resumeUrl,
 }) => {
   const [isOpen, setIsOpen] = useState(false)
@@ -215,12 +215,13 @@ const Nav: FC<NavProps> = ({
   const pendingSectionRef = useRef<string | null>(null)
 
   const navLinks = useMemo(() => [
-    { label: 'About', href: '#about', show: hasAbout },
-    { label: 'Background', href: '#education', show: hasBackground },
     { label: 'Projects', href: '#projects', show: hasProjects },
-    { label: 'Skills', href: '#skills', show: hasSkills },
+    { label: 'About', href: '#about', show: hasAbout },
+    { label: 'Journey', href: '#education', show: hasBackground },
+    { label: 'Toolkit', href: '#skills', show: hasSkills },
     { label: 'Certificates', href: '#certificates', show: hasCertificates },
-  ].filter((link) => link.show), [hasAbout, hasBackground, hasCertificates, hasProjects, hasSkills])
+    { label: 'Contact', href: '#contact', show: hasContact },
+  ].filter((link) => link.show), [hasAbout, hasBackground, hasCertificates, hasContact, hasProjects, hasSkills])
 
   useEffect(() => {
     let animationFrame: number | null = null
@@ -331,11 +332,11 @@ const Nav: FC<NavProps> = ({
           aria-label="Back to top"
         >
           <span className="pp-brand-mark" aria-hidden="true">
-            <img src={logo} alt="" />
+            a<span>.</span>
           </span>
           <span className="pp-brand-copy">
             <strong>Asfi Ahamed</strong>
-            <span>Portfolio</span>
+            <span>Engineering & applied AI</span>
           </span>
         </button>
 
@@ -374,9 +375,10 @@ const Nav: FC<NavProps> = ({
   )
 }
 
-const ProjectCard: FC<{ project: Project; index: number; shouldReduceMotion: boolean }> = ({
+const ProjectCard: FC<{ project: Project; index: number; featured: boolean; shouldReduceMotion: boolean }> = ({
   project,
   index,
+  featured,
   shouldReduceMotion,
 }) => {
   const demoLink = project.demo || project.live_website
@@ -384,7 +386,7 @@ const ProjectCard: FC<{ project: Project; index: number; shouldReduceMotion: boo
 
   return (
     <motion.article
-      className="pp-project-card"
+      className={`pp-project-card ${featured ? 'pp-project-featured' : ''}`}
       initial={shouldReduceMotion ? false : { opacity: 0, y: 18 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-48px' }}
@@ -394,16 +396,16 @@ const ProjectCard: FC<{ project: Project; index: number; shouldReduceMotion: boo
         ease: SECTION_EASE,
       }}
     >
-      {project.image_url && (
+      {project.image_url ? (
         <div className="pp-project-media">
           <img src={project.image_url} alt={project.title} loading="lazy" />
         </div>
-      )}
+      ) : <ProjectDiagram project={project} />}
       <div className="pp-project-body">
+        <div className="pp-project-index"><span>PROJECT {String(index + 1).padStart(2, '0')}</span><span>{project.year}</span></div>
         <div className="pp-project-heading">
           <div>
-            <p className="pp-project-year">{project.year}</p>
-            <h3>{project.title}</h3>
+            <h3>{project.title.includes('-') && !project.title.includes(' ') ? project.title.split('-').filter(Boolean).map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ') : project.title}</h3>
           </div>
           {project.highlight && <span className="pp-project-highlight">{project.highlight}</span>}
         </div>
@@ -416,18 +418,63 @@ const ProjectCard: FC<{ project: Project; index: number; shouldReduceMotion: boo
         <div className="pp-project-links">
           {project.github && (
             <a href={project.github} target="_blank" rel="noopener noreferrer">
-              GitHub <ExternalLink size={14} aria-hidden="true" />
+              Source code <ArrowUpRight size={17} aria-hidden="true" />
             </a>
           )}
           {demoLink && (
             <a href={demoLink} target="_blank" rel="noopener noreferrer" className="pp-project-link-primary">
-              Live project <ArrowRight size={14} aria-hidden="true" />
+              {demoLink.includes('.gif') ? 'Watch walkthrough' : 'Explore project'} <ArrowUpRight size={17} aria-hidden="true" />
             </a>
           )}
           {!hasLinks && <span className="pp-project-unavailable">Links unavailable</span>}
         </div>
       </div>
     </motion.article>
+  )
+}
+
+const ProjectGallery: FC<{ projects: Project[]; shouldReduceMotion: boolean }> = ({ projects, shouldReduceMotion }) => {
+  const [filter, setFilter] = useState('All projects')
+  const ordered = useMemo(() => [...projects].sort((a, b) => Number(b.highlight?.toLowerCase() === 'featured') - Number(a.highlight?.toLowerCase() === 'featured')), [projects])
+  const filtered = ordered.filter(project => filter === 'All projects' || (filter === 'Full stack'
+    ? /full.stack|cms/i.test(project.highlight || '')
+    : /python|langchain|scikit|lightgbm/i.test((project.tech || []).join(' '))))
+  return (
+    <section id="projects" className="pp-section pp-work-section">
+      <div className="pp-container">
+        <div className="pp-work-heading">
+          <SectionHeading
+            eyebrow="01 / Selected projects"
+            title="Ideas, made real."
+            subtitle="From machine learning pipelines to the products people interact with."
+            icon={BriefcaseBusiness}
+          />
+          <span className="pp-work-count">({String(projects.length).padStart(2, '0')})</span>
+        </div>
+        <div className="pp-work-toolbar">
+          <div className="pp-project-filters" role="group" aria-label="Filter projects">
+            {['All projects', 'Full stack', 'AI & data'].map(label => (
+              <button type="button" key={label} aria-pressed={filter === label} onClick={() => setFilter(label)}>
+                {label}{filter === label && <span aria-hidden="true">↗</span>}
+              </button>
+            ))}
+          </div>
+          <span className="pp-work-caption" role="status">{filtered.length} projects / Explore the projects</span>
+        </div>
+        <div className="pp-projects">
+          {filtered.map((project, index) => (
+            <ProjectCard
+              key={project.id}
+              project={project}
+              index={ordered.findIndex(item => item.id === project.id)}
+              featured={index === 0 || (filtered.length % 2 === 0 && index === filtered.length - 1)}
+              shouldReduceMotion={shouldReduceMotion}
+            />
+          ))}
+        </div>
+        {filtered.length === 0 && <p className="pp-project-empty">No projects in this category yet.</p>}
+      </div>
+    </section>
   )
 }
 
@@ -445,7 +492,7 @@ const PortfolioLoadingScreen: FC = () => (
         <span className="pp-loader-orbit pp-loader-orbit-violet" aria-hidden="true" />
         <span className="pp-loader-orbit pp-loader-orbit-pink" aria-hidden="true" />
         <span className="pp-loader-logo">
-          <img src={logo} alt="Asfi Ahamed portfolio" />
+          <span aria-label="Asfi Ahamed">a.</span>
         </span>
       </div>
       <p className="pp-loader-label">Asfi Ahamed</p>
@@ -464,9 +511,8 @@ const PortfolioLoadingScreen: FC = () => (
 
 const PortfolioRetryScreen: FC<{ message: string; onRetry: () => void }> = ({ message, onRetry }) => (
   <main className="portfolio-public pp-state-screen">
-    <AmbientOrbs />
     <div className="pp-state-card" role="alert">
-      <span className="pp-state-logo"><img src={logo} alt="" /></span>
+      <span className="pp-state-logo" aria-hidden="true">a.</span>
       <p className="pp-state-label">Portfolio unavailable</p>
       <h1>Could not load the portfolio</h1>
       <p>Please check your connection and try again.</p>
@@ -485,7 +531,6 @@ interface PortfolioContentProps {
 const PortfolioContent: FC<PortfolioContentProps> = ({ onRetry }) => {
   const [formData, setFormData] = useState({ name: '', email: '', message: '' })
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const projectsScrollerRef = useRef<HTMLDivElement>(null)
   const shouldReduceMotion = Boolean(useReducedMotion())
 
   const {
@@ -524,6 +569,8 @@ const PortfolioContent: FC<PortfolioContentProps> = ({ onRetry }) => {
   const hasHero = hasHeroContent(siteContent)
   const showBackgroundSection = hasEducation || hasExperience
   const resumeUrl = siteContent?.resume_url || '/Asfi_CV.pdf'
+  const heroTitle = siteContent?.hero_title?.trim() || 'Asfi Ahamed'
+  const heroWords = heroTitle.split(/\s+/)
 
   const skillGroups = skills.reduce<Record<string, Skill[]>>((groups, skill) => {
     if (!groups[skill.category]) groups[skill.category] = []
@@ -531,9 +578,13 @@ const PortfolioContent: FC<PortfolioContentProps> = ({ onRetry }) => {
     return groups
   }, {})
 
-  const copyEmail = () => {
-    navigator.clipboard.writeText('muasfiahamed276@gmail.com')
-    toast.success('Email copied to clipboard')
+  const copyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText('muasfiahamed276@gmail.com')
+      toast.success('Email copied to clipboard')
+    } catch {
+      toast.error('Could not copy. Email me at muasfiahamed276@gmail.com.')
+    }
   }
 
   const handleSubmit = (event: React.FormEvent) => {
@@ -550,7 +601,6 @@ const PortfolioContent: FC<PortfolioContentProps> = ({ onRetry }) => {
 
     window.setTimeout(() => {
       toast.success('Opening your email client...')
-      setFormData({ name: '', email: '', message: '' })
       setIsSubmitting(false)
     }, 800)
   }
@@ -559,49 +609,38 @@ const PortfolioContent: FC<PortfolioContentProps> = ({ onRetry }) => {
     setFormData((current) => ({ ...current, [event.target.name]: event.target.value }))
   }
 
-  const scrollProjects = (direction: -1 | 1) => {
-    const scroller = projectsScrollerRef.current
-    if (!scroller) return
-    scroller.scrollBy({
-      left: direction * Math.max(320, scroller.clientWidth * 0.82),
-      behavior: getScrollBehavior(),
-    })
-  }
-
   return (
     <div className="portfolio-public">
       <a className="pp-skip-link" href="#portfolio-content">Skip to content</a>
-      <AmbientOrbs />
       <Nav
         hasAbout={hasAbout}
         hasBackground={showBackgroundSection}
         hasProjects={hasProjects}
         hasSkills={hasSkills}
         hasCertificates={hasCertificates}
+        hasContact={hasContact}
         resumeUrl={resumeUrl}
       />
 
       <main id="portfolio-content">
         {hasHero && (
           <section className="pp-hero" aria-labelledby="portfolio-title">
+            <div className="pp-container pp-hero-topline"><span><span className="pp-status-dot" /> 3RD YEAR</span><span>SRI LANKA <ArrowUpRight size={13} aria-hidden="true" /></span></div>
             <div className="pp-container pp-hero-grid">
               <div className="pp-hero-heading">
+                <p className="pp-hero-intro">Curious mind. Engineer at heart.</p>
                 {isNotEmpty(siteContent?.hero_status) && (
                   <p className="pp-hero-status"><span aria-hidden="true" />{siteContent?.hero_status}</p>
                 )}
-                {isNotEmpty(siteContent?.hero_title) && (
-                  <h1 id="portfolio-title">{siteContent?.hero_title}</h1>
-                )}
+                <h1 id="portfolio-title" className={heroWords.length > 2 ? 'pp-hero-long-title' : undefined}>
+                  {heroWords.length > 2 ? heroTitle : heroWords.map((word, index) => (
+                    <span key={`${word}-${index}`}>{word}{index === heroWords.length - 1 && <span className="pp-name-dot">.</span>}</span>
+                  ))}
+                </h1>
               </div>
 
               <div className="pp-portrait">
-                <div className="pp-portrait-visual">
-                  <div className="pp-portrait-accent" aria-hidden="true" />
-                  <div className="pp-portrait-frame">
-                    <img src={asfiPortrait} alt="Asfi Ahamed" />
-                  </div>
-                </div>
-                <p>Software Engineering · Data Science & Machine Learning</p>
+                <Portrait />
               </div>
 
               <div className="pp-hero-details">
@@ -618,7 +657,7 @@ const PortfolioContent: FC<PortfolioContentProps> = ({ onRetry }) => {
                       onClick={() => document.getElementById('projects')?.scrollIntoView({ behavior: getScrollBehavior() })}
                       className="pp-button pp-button-primary"
                     >
-                      View projects <ArrowRight size={17} aria-hidden="true" />
+                      Explore my projects <ArrowDown size={17} aria-hidden="true" />
                     </button>
                   )}
                   {hasContact && (
@@ -627,12 +666,9 @@ const PortfolioContent: FC<PortfolioContentProps> = ({ onRetry }) => {
                       onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: getScrollBehavior() })}
                       className="pp-button pp-button-secondary"
                     >
-                      Contact me
+                      Let's talk <ArrowUpRight size={17} aria-hidden="true" />
                     </button>
                   )}
-                  <a href={resumeUrl} download="Asfi_Ahamed_CV.pdf" className="pp-text-action">
-                    <Download size={16} aria-hidden="true" /> Resume
-                  </a>
                 </div>
                 {hasSocials && (
                   <div className="pp-socials" aria-label="Social profiles">
@@ -653,8 +689,11 @@ const PortfolioContent: FC<PortfolioContentProps> = ({ onRetry }) => {
                 )}
               </div>
             </div>
+            <div className="pp-container pp-hero-bottom"><span>COMPUTER SCIENCE & ENGINEERING<br /><strong>University of Moratuwa</strong></span><a href={hasProjects ? '#projects' : '#about'} className="pp-scroll-cue"><span>SCROLL TO DISCOVER</span><ArrowDown size={17} aria-hidden="true" /></a></div>
           </section>
         )}
+
+        {hasProjects && <ProjectGallery projects={projects} shouldReduceMotion={shouldReduceMotion} />}
 
         {hasAbout && (
           <motion.section
@@ -666,8 +705,8 @@ const PortfolioContent: FC<PortfolioContentProps> = ({ onRetry }) => {
               <div className="pp-about-layout">
                 <div className="pp-about-content">
                   <SectionHeading
-                    eyebrow="About"
-                    title="A focused builder with a systems mindset."
+                    eyebrow="02 / A little about me"
+                    title="A builder. Always a learner."
                     icon={Code2}
                   />
                   {isNotEmpty(siteContent?.about_text) && (
@@ -692,7 +731,8 @@ const PortfolioContent: FC<PortfolioContentProps> = ({ onRetry }) => {
                 </div>
 
                 <aside className="pp-about-focus-card" aria-labelledby="about-focus-title">
-                  <h3 id="about-focus-title">What I bring</h3>
+                  <p className="pp-focus-label">THE INTERSECTION I WORK IN</p>
+                  <h3 id="about-focus-title">Systems thinking.<br /><em>Human perspective.</em></h3>
                   <div className="pp-about-focus-list">
                     {ABOUT_FOCUS_AREAS.map((area, index) => {
                       const Icon = area.icon
@@ -745,9 +785,8 @@ const PortfolioContent: FC<PortfolioContentProps> = ({ onRetry }) => {
           >
             <div className="pp-container">
               <SectionHeading
-                eyebrow="Background"
-                title="Education and experience"
-                subtitle="A concise view of the academic and practical foundation behind the work."
+                eyebrow="03 / The journey"
+                title="Learning. Building. Giving back."
                 icon={GraduationCap}
               />
               <div className="pp-background-grid">
@@ -788,43 +827,6 @@ const PortfolioContent: FC<PortfolioContentProps> = ({ onRetry }) => {
           </motion.section>
         )}
 
-        {hasProjects && (
-          <motion.section
-            id="projects"
-            className="pp-section pp-section-muted"
-            {...getSectionMotion(shouldReduceMotion)}
-          >
-            <div className="pp-container">
-              <div className="pp-section-row">
-                <SectionHeading
-                  eyebrow="Selected work"
-                  title="Projects with substance"
-                  subtitle="Shipped work, experiments, and systems—presented with the details that matter."
-                  icon={BriefcaseBusiness}
-                />
-                <div className="pp-carousel-controls" aria-label="Project carousel controls">
-                  <button type="button" onClick={() => scrollProjects(-1)} aria-label="Previous project">
-                    <ChevronLeft size={19} aria-hidden="true" />
-                  </button>
-                  <button type="button" onClick={() => scrollProjects(1)} aria-label="Next project">
-                    <ChevronRight size={19} aria-hidden="true" />
-                  </button>
-                </div>
-              </div>
-              <div ref={projectsScrollerRef} className="pp-projects" aria-label="Projects">
-                {projects.map((project, index) => (
-                  <ProjectCard
-                    key={project.id || index}
-                    project={project}
-                    index={index}
-                    shouldReduceMotion={shouldReduceMotion}
-                  />
-                ))}
-              </div>
-            </div>
-          </motion.section>
-        )}
-
         {hasSkills && (
           <motion.section
             id="skills"
@@ -833,9 +835,9 @@ const PortfolioContent: FC<PortfolioContentProps> = ({ onRetry }) => {
           >
             <div className="pp-container">
               <SectionHeading
-                eyebrow="Expertise"
-                title="Tools for real builds"
-                subtitle="Core capabilities grouped by how they contribute to the work."
+                eyebrow="04 / The toolkit"
+                title="The right tool. The right problem."
+                subtitle="The languages, frameworks, and ideas I turn to when building."
                 icon={Code2}
               />
               <div className="pp-skills-grid">
@@ -853,6 +855,7 @@ const PortfolioContent: FC<PortfolioContentProps> = ({ onRetry }) => {
                     }}
                   >
                     <div className="pp-skill-heading">
+                      <span className="pp-skill-number">{String(index + 1).padStart(2, '0')}</span>
                       <h3>{category}</h3>
                       <span>{items.length} {items.length === 1 ? 'skill' : 'skills'}</span>
                     </div>
@@ -869,15 +872,15 @@ const PortfolioContent: FC<PortfolioContentProps> = ({ onRetry }) => {
         {hasContact && (
           <motion.section
             id="contact"
-            className="pp-section pp-section-muted"
+            className="pp-section pp-contact-section"
             {...getSectionMotion(shouldReduceMotion)}
           >
             <div className="pp-container pp-contact-grid">
               <div className="pp-contact-copy">
                 <SectionHeading
-                  eyebrow="Contact"
-                  title="Let's build something considered"
-                  subtitle={siteContent?.contact_intro || undefined}
+                  eyebrow="06 / What's next?"
+                  title="Good things start with a conversation."
+                  subtitle={siteContent?.contact_intro && !/©|copyright|all rights reserved/i.test(siteContent.contact_intro) ? siteContent.contact_intro : 'A project, a collaboration, or an interesting problem. I’d love to hear about it.'}
                   icon={Mail}
                 />
                 <address className="pp-contact-details">
@@ -928,9 +931,10 @@ const PortfolioContent: FC<PortfolioContentProps> = ({ onRetry }) => {
                   />
                 </label>
                 <button type="submit" disabled={isSubmitting} className="pp-button pp-button-primary pp-submit-button">
-                  {isSubmitting ? 'Opening email…' : 'Send message'}
+                  {isSubmitting ? 'Opening email…' : 'Open email draft'}
                   <Send size={17} aria-hidden="true" />
                 </button>
+                <p className="pp-form-note">Opens your email app with your message ready to send.</p>
                 <span className="pp-sr-only" aria-live="polite">
                   {isSubmitting ? 'Opening your email application.' : ''}
                 </span>
@@ -941,6 +945,7 @@ const PortfolioContent: FC<PortfolioContentProps> = ({ onRetry }) => {
       </main>
 
       <footer className="pp-footer">
+        <div className="pp-container pp-footer-wordmark" aria-hidden="true">ASFI AHAMED<span>↗</span></div>
         <div className="pp-container pp-footer-inner">
           <p>{siteContent?.footer_text || `© ${new Date().getFullYear()} Asfi Ahamed. All rights reserved.`}</p>
           <div className="pp-footer-links">
