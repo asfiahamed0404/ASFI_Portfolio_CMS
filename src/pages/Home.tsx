@@ -31,7 +31,7 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 
-import asfiPortrait from '../assets/Asfi_face.png'
+import asfiPortrait from '../../Asfi.png'
 import logo from '../assets/logo.png'
 import AmbientOrbs from '../components/AmbientOrbs'
 import BackToTop from '../components/BackToTop'

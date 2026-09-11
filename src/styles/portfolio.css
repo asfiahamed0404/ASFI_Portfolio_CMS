@@ -269,7 +269,10 @@
 }
 
 .pp-hero {
-  padding-block: clamp(5.5rem, 10vw, 8rem);
+  min-height: calc(100svh - 68px);
+  display: flex;
+  align-items: center;
+  padding-block: clamp(2.25rem, 6vh, 4.25rem);
 }
 
 .pp-hero-grid {
@@ -450,7 +453,7 @@
   place-items: center;
   overflow: clip;
   border-radius: 26px;
-  padding: 4.25%;
+  padding: 3%;
   isolation: isolate;
 }
 
@@ -493,7 +496,7 @@
 .pp-portrait-frame {
   position: relative;
   z-index: 1;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 5 / 4;
   overflow: hidden;
   border: 1px solid var(--pp-border);
   border-radius: 14px;
@@ -505,13 +508,13 @@
   height: 100%;
   display: block;
   object-fit: cover;
-  object-position: 50% 25%;
+  object-position: 50% 10%;
 }
 
 .pp-portrait > p {
   position: relative;
   z-index: 1;
-  margin: 0.8rem 0 0;
+  margin: 0.55rem 0 0;
   color: var(--pp-text-muted);
   font-size: 0.7rem;
   letter-spacing: 0.03em;
@@ -1900,7 +1903,8 @@ button.pp-certificate-card:hover {
   }
 
   .pp-hero {
-    padding-block: 4.5rem 5.5rem;
+    min-height: calc(100svh - 68px);
+    padding-block: 2rem 2.75rem;
   }
 
   .pp-hero-grid {
@@ -1970,7 +1974,7 @@ button.pp-certificate-card:hover {
 
 @media (max-width: 640px) {
   .pp-hero {
-    padding-block: 3.6rem 4.5rem;
+    padding-block: 1.5rem 2rem;
   }
 
   .pp-hero-grid {
@@ -2009,7 +2013,7 @@ button.pp-certificate-card:hover {
     width: 100%;
     overflow: clip;
     border-radius: 22px;
-    padding: 4.25%;
+    padding: 3%;
   }
 
   .pp-portrait-frame {
@@ -2122,7 +2126,7 @@ button.pp-certificate-card:hover {
 
   .pp-portrait-visual {
     border-radius: 20px;
-    padding: 4.25%;
+    padding: 3%;
   }
 
   .pp-portrait-accent {

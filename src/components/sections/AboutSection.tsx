@@ -3,7 +3,7 @@ import { User } from 'lucide-react';
 import type { FC } from 'react';
 import type { SiteContent } from '../../lib/supabase';
 import SectionHeading from '../SectionHeading';
-import fallbackPortrait from '../../assets/Asfi_face.png';
+import fallbackPortrait from '../../../Asfi.png';
 
 // Simple utility to check if a value is not empty
 const isNotEmpty = (val: unknown): boolean => {
