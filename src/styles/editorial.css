@@ -40,8 +40,8 @@
 .pp-nav { position: sticky; top: 0; z-index: 60; background: rgb(244 243 237 / 94%); backdrop-filter: blur(16px); border-bottom: 1px solid var(--pp-border); }
 .pp-nav-inner { width: min(100% - 7rem, 1280px); min-height: 80px; display: flex; align-items: center; justify-content: space-between; gap: 24px; margin: auto; }
 .pp-brand { display: flex; align-items: center; gap: 12px; color: var(--pp-text); padding: 0; background: none; border: 0; text-align: left; flex-shrink: 0; }
-.pp-brand-mark { font: 700 45px/.8 var(--font-heading); letter-spacing: -.11em; padding-right: 6px; }
-.pp-brand-mark > span { color: #688d2a; }
+.pp-brand-mark { display: block; width: 44px; height: 44px; flex-shrink: 0; overflow: hidden; border-radius: 10px; }
+.pp-brand-mark img { display: block; width: 100%; height: 100%; object-fit: contain; }
 .pp-brand-copy { display: flex; flex-direction: column; line-height: 1.5; }
 .pp-brand-copy strong { font-size: 14px; letter-spacing: -.02em; }
 .pp-brand-copy > span { color: var(--pp-text-muted); font-size: 11px; }
@@ -282,7 +282,8 @@ button.pp-certificate-card:hover { transform: translateY(-5px); border-color: #6
 .pp-loader-content, .pp-state-card { max-width: 500px; }
 .pp-loader-ambient, .pp-loader-grid, .pp-loader-corner, .pp-loader-ring, .pp-loader-orbit, .pp-loader-dots { display: none; }
 .pp-loader-mark { display: grid; place-items: center; margin-bottom: 28px; }
-.pp-loader-logo, .pp-state-logo { display: block; width: 60px; margin-inline: auto; font: 700 68px/1 var(--font-heading); letter-spacing: -.1em; color: #5f7a3c; }
+.pp-loader-logo, .pp-state-logo { display: block; width: 64px; height: 64px; margin-inline: auto; overflow: hidden; border-radius: 14px; }
+.pp-loader-logo img, .pp-state-logo img { display: block; width: 100%; height: 100%; object-fit: contain; }
 .pp-loader-label, .pp-state-label { font: 11px var(--pp-mono); text-transform: uppercase; letter-spacing: .1em; margin-block: 20px !important; }
 .pp-loader-content h1, .pp-state-card h1 { font-size: 44px; letter-spacing: -.05em; font-weight: 500; }
 .pp-loader-description, .pp-state-card > p { font-size: 14px; color: var(--pp-text-soft); margin-top: 20px; }
@@ -349,7 +350,7 @@ button.pp-certificate-card:hover { transform: translateY(-5px); border-color: #6
   .pp-nav-inner { min-height: 68px; gap: 12px; }
   .pp-nav-resume { padding: 8px 12px; font-size: 11px; }
   .pp-brand-copy { display: none; }
-  .pp-brand-mark { font-size: 38px; }
+  .pp-brand-mark { width: 38px; height: 38px; border-radius: 8px; }
   .pp-nav-actions { gap: 8px; }
   .pp-icon-button, .pp-menu-button { width: 36px; height: 36px; }
   .pp-hero { min-height: auto; padding-top: 19px; }

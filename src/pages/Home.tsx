@@ -30,6 +30,7 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 
+import logo from '../assets/logo.png'
 import Portrait from '../components/Portrait'
 import ProjectDiagram from '../components/ProjectDiagram'
 import BackToTop from '../components/BackToTop'
@@ -332,7 +333,7 @@ const Nav: FC<NavProps> = ({
           aria-label="Back to top"
         >
           <span className="pp-brand-mark" aria-hidden="true">
-            a<span>.</span>
+            <img src={logo} alt="" width={44} height={44} />
           </span>
           <span className="pp-brand-copy">
             <strong>Asfi Ahamed</strong>
@@ -492,7 +493,7 @@ const PortfolioLoadingScreen: FC = () => (
         <span className="pp-loader-orbit pp-loader-orbit-violet" aria-hidden="true" />
         <span className="pp-loader-orbit pp-loader-orbit-pink" aria-hidden="true" />
         <span className="pp-loader-logo">
-          <span aria-label="Asfi Ahamed">a.</span>
+          <img src={logo} alt="Asfi Ahamed" width={64} height={64} />
         </span>
       </div>
       <p className="pp-loader-label">Asfi Ahamed</p>
@@ -512,7 +513,7 @@ const PortfolioLoadingScreen: FC = () => (
 const PortfolioRetryScreen: FC<{ message: string; onRetry: () => void }> = ({ message, onRetry }) => (
   <main className="portfolio-public pp-state-screen">
     <div className="pp-state-card" role="alert">
-      <span className="pp-state-logo" aria-hidden="true">a.</span>
+      <span className="pp-state-logo" aria-hidden="true"><img src={logo} alt="" width={64} height={64} /></span>
       <p className="pp-state-label">Portfolio unavailable</p>
       <h1>Could not load the portfolio</h1>
       <p>Please check your connection and try again.</p>
