@@ -3,6 +3,23 @@ import { useEffect, useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../lib/supabase'
+import logo from '../assets/logo.png'
+import '../styles/admin.css'
+import '../styles/admin-editorial.css'
+
+function AccessScreen({ title, loading = false, children }: { title: string; loading?: boolean; children?: ReactNode }) {
+  return (
+    <main className="admin-access-screen">
+      <div className="admin-access-card" aria-busy={loading}>
+        <img className="admin-access-logo" src={logo} alt="Asfi Ahamed" width={62} height={62} />
+        <p className="admin-access-eyebrow">PORTFOLIO STUDIO</p>
+        <h1>{title}</h1>
+        {children}
+        {loading && <div className="admin-access-progress" role="status" aria-label="Verifying your session" />}
+      </div>
+    </main>
+  )
+}
 
 interface AdminResolution {
   userId: string
@@ -65,9 +82,7 @@ export default function RequireAuth({ children }: { children: ReactNode }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#030303] flex items-center justify-center">
-        <div className="text-white">Loading...</div>
-      </div>
+      <AccessScreen title="Opening your studio." loading><p>Checking your session…</p></AccessScreen>
     )
   }
 
@@ -77,41 +92,33 @@ export default function RequireAuth({ children }: { children: ReactNode }) {
 
   if (!resolved || resolved.userId !== user.id) {
     return (
-      <div className="min-h-screen bg-[#030303] flex items-center justify-center">
-        <div className="text-white">Loading...</div>
-      </div>
+      <AccessScreen title="One moment." loading><p>Verifying your admin access…</p></AccessScreen>
     )
   }
 
   if (resolved.error) {
     return (
-      <div className="min-h-screen bg-[#030303] flex items-center justify-center p-4">
-        <div className="text-center text-white">
-          <h2 className="text-xl font-semibold mb-2">Unable to verify admin access</h2>
-          <p className="text-[#71717a] mb-4">{resolved.error}</p>
-          <p className="text-sm text-[#71717a]">Check Supabase dashboard → Project Status</p>
-        </div>
-      </div>
+      <AccessScreen title="Unable to verify access.">
+        <p role="alert">{resolved.error}</p>
+        <button type="button" className="admin-btn admin-btn-primary" onClick={() => window.location.reload()}>Try again</button>
+      </AccessScreen>
     )
   }
 
   if (!resolved.isAdmin) {
     return (
-      <div className="min-h-screen bg-[#030303] flex items-center justify-center p-4">
-        <div className="text-center text-white">
-          <h2 className="text-xl font-semibold mb-2">Access denied</h2>
-          <p className="text-[#71717a] mb-4">This account is not authorized to access the CMS.</p>
-          {signOutError && <p className="text-sm text-red-300 mb-4" role="alert">{signOutError}</p>}
-          <button
-            type="button"
-            onClick={handleUnauthorizedSignOut}
-            disabled={isSigningOut}
-            className="rounded-md bg-white px-4 py-2 text-sm font-medium text-black disabled:opacity-60"
-          >
-            {isSigningOut ? 'Signing out…' : 'Sign out'}
-          </button>
-        </div>
-      </div>
+      <AccessScreen title="Admin access required.">
+        <p>This account is not authorized to access the studio.</p>
+        {signOutError && <p className="admin-error-title" role="alert">{signOutError}</p>}
+        <button
+          type="button"
+          onClick={handleUnauthorizedSignOut}
+          disabled={isSigningOut}
+          className="admin-btn admin-btn-primary"
+        >
+          {isSigningOut ? 'Signing out…' : 'Sign out'}
+        </button>
+      </AccessScreen>
     )
   }
 

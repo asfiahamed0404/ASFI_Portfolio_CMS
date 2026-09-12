@@ -319,8 +319,8 @@ export default function AdminCrudPage<TItem extends object, TCreate, TUpdate>({
       <div className="admin-page admin-collection-page">
         <AdminPageHeader title={title} eyebrow="Content manager" />
         <div className="admin-error-panel" role="alert">
-          <p className="text-red-300 mb-3">Failed to load {title.toLowerCase()}</p>
-          <p className="text-sm mb-5 text-[#d4d4d8]">{error}</p>
+          <p className="admin-error-title">Failed to load {title.toLowerCase()}</p>
+          <p className="admin-error-detail">{error}</p>
           <button type="button" onClick={load} className="admin-primary-action">
             Retry
           </button>

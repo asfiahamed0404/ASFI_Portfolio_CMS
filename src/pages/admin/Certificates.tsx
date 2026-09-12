@@ -345,8 +345,8 @@ export default function AdminCertificates() {
       <div className="admin-page admin-collection-page">
         <AdminPageHeader title="Certificates" eyebrow="Credential library" />
         <div className="admin-error-panel" role="alert">
-          <p className="mb-3 text-red-300">Failed to load certificates</p>
-          <p className="mb-5 text-sm text-[#d4d4d8]">{error}</p>
+          <p className="admin-error-title">Failed to load certificates</p>
+          <p className="admin-error-detail">{error}</p>
           <button type="button" onClick={load} className="admin-primary-action">
             Retry
           </button>
@@ -480,7 +480,7 @@ export default function AdminCertificates() {
                           {certificate.issuer}
                         </div>
                       </td>
-                      <td className="font-mono tabular-nums text-[#a1a1aa]">
+                      <td className="admin-cell-order">
                         {certificate.display_order}
                       </td>
                       <td className="admin-table-actions-cell">

@@ -206,8 +206,8 @@ export default function AdminSiteContent() {
           actions={viewSiteAction}
         />
         <div className="admin-error-panel">
-          <p className="mb-3 text-red-300">Failed to load site content</p>
-          <p className="mb-5 text-sm text-[#d4d4d8]">{error}</p>
+          <p className="admin-error-title">Failed to load site content</p>
+          <p className="admin-error-detail">{error}</p>
           <button type="button" onClick={load} className="admin-primary-action">
             Retry
           </button>

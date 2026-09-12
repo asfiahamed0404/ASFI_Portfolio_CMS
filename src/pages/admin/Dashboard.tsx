@@ -11,12 +11,12 @@ import {
 } from 'recharts'
 import {
   Award,
+  ArrowUpRight,
   Briefcase,
   CalendarCheck,
   CalendarDays,
   CalendarRange,
   Code2,
-  ExternalLink,
   FileText,
   GraduationCap,
   Heart,
@@ -108,15 +108,18 @@ export default function AdminDashboard() {
   return (
     <div className="admin-page admin-dashboard">
       <AdminPageHeader
-        eyebrow="Portfolio CMS"
-        title="Dashboard"
+        eyebrow="Workspace / Overview"
+        title="Your portfolio, at a glance."
+        description="Manage your content and see how visitors respond to your work."
         actions={(
-          <Link to="/" className="admin-secondary-action">
-            <ExternalLink size={16} aria-hidden="true" />
-            <span>View site</span>
+          <Link to="/admin/projects" className="admin-primary-action">
+            <span>Manage projects</span>
+            <ArrowUpRight size={16} aria-hidden="true" />
           </Link>
         )}
       />
+
+      <div className="admin-overview-label"><span>YOUR CONTENT</span><span>Select a collection to edit</span></div>
 
       <section className="admin-dashboard-counts" aria-label="Content overview">
         {contentStats.map((stat) => (
@@ -132,9 +135,9 @@ export default function AdminDashboard() {
         <div className="admin-dashboard-section-heading">
           <h2 id="admin-appreciation-title" className="admin-dashboard-section-title">
             <Heart size={16} aria-hidden="true" />
-            Appreciations
+            A little appreciation.
           </h2>
-          <span className="admin-chart-subtitle">Live portfolio engagement</span>
+          <span className="admin-chart-subtitle">Visitor appreciation activity</span>
         </div>
 
         {appreciationLoading && (
@@ -197,18 +200,18 @@ export default function AdminDashboard() {
                   >
                     <defs>
                       <linearGradient id="adminAppreciationGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#22d3ee" stopOpacity={0.28} />
-                        <stop offset="95%" stopColor="#22d3ee" stopOpacity={0} />
+                        <stop offset="5%" stopColor="#86a852" stopOpacity={0.32} />
+                        <stop offset="95%" stopColor="#86a852" stopOpacity={0.02} />
                       </linearGradient>
                     </defs>
                     <CartesianGrid
                       strokeDasharray="3 3"
-                      stroke="rgba(255,255,255,0.07)"
+                      stroke="#e2e5d9"
                       vertical={false}
                     />
                     <XAxis
                       dataKey="date"
-                      tick={{ fill: '#8b93a1', fontSize: 10 }}
+                      tick={{ fill: '#6b7360', fontSize: 11 }}
                       tickLine={false}
                       axisLine={false}
                       tickFormatter={formatShortDate}
@@ -216,7 +219,7 @@ export default function AdminDashboard() {
                       minTickGap={38}
                     />
                     <YAxis
-                      tick={{ fill: '#8b93a1', fontSize: 10 }}
+                      tick={{ fill: '#6b7360', fontSize: 11 }}
                       tickLine={false}
                       axisLine={false}
                       allowDecimals={false}
@@ -224,21 +227,21 @@ export default function AdminDashboard() {
                     />
                     <Tooltip
                       contentStyle={{
-                        background: '#14171c',
-                        border: '1px solid rgba(255,255,255,0.12)',
-                        borderRadius: '10px',
-                        boxShadow: '0 12px 30px rgba(0,0,0,0.35)',
-                        color: '#fff',
+                        background: '#fffef9',
+                        border: '1px solid #d4d8ca',
+                        borderRadius: '8px',
+                        boxShadow: '0 8px 24px rgba(34,38,30,0.08)',
+                        color: '#28351e',
                         fontSize: 12,
                       }}
-                      cursor={{ stroke: 'rgba(34,211,238,0.32)', strokeWidth: 1 }}
+                      cursor={{ stroke: '#8fa773', strokeWidth: 1 }}
                       labelFormatter={(label) => formatLongDate(String(label))}
                       formatter={(value) => [String(value), 'Appreciations']}
                     />
                     <Area
                       type="monotone"
                       dataKey="count"
-                      stroke="#22d3ee"
+                      stroke="#65833e"
                       strokeWidth={2}
                       fill="url(#adminAppreciationGradient)"
                       isAnimationActive={!prefersReducedMotion}
@@ -284,6 +287,7 @@ function ContentStatCard({ title, getFn, icon: Icon, to }: ContentStat) {
           <Icon size={16} />
         </span>
         <span className="admin-stat-label">{title}</span>
+        <ArrowUpRight className="admin-stat-arrow" size={16} aria-hidden="true" />
       </span>
       <span className="admin-stat-value" aria-live="polite">
         {count ?? '—'}
