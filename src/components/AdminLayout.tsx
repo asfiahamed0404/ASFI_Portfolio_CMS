@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from 'react'
-import { Link, NavLink, Outlet } from 'react-router-dom'
+import { Fragment, useEffect, useRef, useState } from 'react'
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { toast } from 'sonner'
 import {
   Award,
+  ArrowUpRight,
   Briefcase,
   Code2,
   FileText,
@@ -20,6 +21,7 @@ import {
 import { useAuth } from '../hooks/useAuth'
 import logo from '../assets/logo.png'
 import '../styles/admin.css'
+import '../styles/admin-editorial.css'
 
 const navItems = [
   { to: '/admin', label: 'Dashboard', icon: LayoutDashboard },
@@ -43,12 +45,19 @@ const focusableSelector = [
 ].join(',')
 
 export default function AdminLayout() {
+  const { pathname } = useLocation()
   const { logout } = useAuth()
   const [isOpen, setIsOpen] = useState(false)
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isLoggingOut, setIsLoggingOut] = useState(false)
   const menuButtonRef = useRef<HTMLButtonElement>(null)
   const mobileDrawerRef = useRef<HTMLDivElement>(null)
+  const mainRef = useRef<HTMLElement>(null)
+  const currentSection = navItems.find(item => item.to === pathname)?.label ?? 'Dashboard'
+
+  useEffect(() => {
+    mainRef.current?.scrollTo({ top: 0, behavior: 'instant' })
+  }, [pathname])
 
   const closeMobileNavigation = () => setIsOpen(false)
 
@@ -130,8 +139,8 @@ export default function AdminLayout() {
           <img src={logo} alt="" width={32} height={32} className="admin-sidebar-logo" />
         </span>
         <div className="admin-sidebar-brand-copy">
-          <div className="admin-sidebar-title">Admin Studio</div>
-          <div className="admin-sidebar-subtitle">Portfolio CMS</div>
+          <div className="admin-sidebar-title">Asfi Ahamed</div>
+          <div className="admin-sidebar-subtitle">PORTFOLIO STUDIO</div>
         </div>
 
         {mobile ? (
@@ -161,19 +170,24 @@ export default function AdminLayout() {
       </div>
 
       <nav className="admin-nav" aria-label="Admin sections">
-        {navItems.map((item) => (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            end={item.to === '/admin'}
-            onClick={closeMobileNavigation}
-            className={({ isActive }) => `admin-nav-link${isActive ? ' admin-nav-link-active' : ''}`}
-            aria-label={!mobile && isCollapsed ? item.label : undefined}
-            title={!mobile && isCollapsed ? item.label : undefined}
-          >
-            <item.icon size={18} aria-hidden="true" />
-            <span className="admin-sidebar-label">{item.label}</span>
-          </NavLink>
+        {navItems.map((item, index) => (
+          <Fragment key={item.to}>
+            {[0, 1, 6].includes(index) && (
+              <p className="admin-nav-label">{index === 0 ? 'Workspace' : index === 1 ? 'Portfolio' : 'Settings'}</p>
+            )}
+            <NavLink
+              to={item.to}
+              end={item.to === '/admin'}
+              onClick={closeMobileNavigation}
+              className={({ isActive }) => `admin-nav-link${isActive ? ' admin-nav-link-active' : ''}`}
+              aria-label={!mobile && isCollapsed ? item.label : undefined}
+              title={!mobile && isCollapsed ? item.label : undefined}
+            >
+              <item.icon size={18} aria-hidden="true" />
+              <span className="admin-sidebar-label">{item.label}</span>
+              <span className="admin-nav-indicator" aria-hidden="true" />
+            </NavLink>
+          </Fragment>
         ))}
       </nav>
 
@@ -199,6 +213,10 @@ export default function AdminLayout() {
           <LogOut size={18} aria-hidden="true" />
           <span className="admin-sidebar-label">{isLoggingOut ? 'Logging out…' : 'Logout'}</span>
         </button>
+        <div className="admin-sidebar-owner">
+          <span className="admin-owner-avatar" aria-hidden="true">AA</span>
+          <span className="admin-sidebar-label"><strong>Asfi Ahamed</strong><span>Portfolio administrator</span></span>
+        </div>
       </div>
     </aside>
   )
@@ -214,7 +232,7 @@ export default function AdminLayout() {
           <span className="admin-sidebar-brand-mark" aria-hidden="true">
             <img src={logo} alt="" width={30} height={30} className="admin-sidebar-logo" />
           </span>
-          <span>Admin Studio</span>
+          <span>Portfolio Studio</span>
         </Link>
         <button
           ref={menuButtonRef}
@@ -252,8 +270,14 @@ export default function AdminLayout() {
         </>
       )}
 
-      <main id="admin-main-content" className="admin-main" tabIndex={-1}>
-        <Outlet />
+      <main ref={mainRef} id="admin-main-content" className="admin-main" tabIndex={-1}>
+        <div className="admin-workspace-header">
+          <nav className="admin-breadcrumb" aria-label="Breadcrumb">
+            <Link to="/admin">Studio</Link><span aria-hidden="true">/</span><span aria-current="page">{currentSection}</span>
+          </nav>
+          <Link to="/" target="_blank" rel="noopener noreferrer" className="admin-preview-link">View portfolio <ArrowUpRight size={16} aria-hidden="true" /></Link>
+        </div>
+        <div className="admin-workspace-content"><Outlet /></div>
       </main>
     </div>
   )

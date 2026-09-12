@@ -137,8 +137,8 @@ export default function AdminBranding() {
           description="Review and replace the portfolio's stored image assets."
         />
         <div className="admin-error-panel">
-          <p className="mb-3 text-red-300">Failed to load branding assets</p>
-          <p className="mb-5 text-sm text-[#d4d4d8]">{error}</p>
+          <p className="admin-error-title">Failed to load branding assets</p>
+          <p className="admin-error-detail">{error}</p>
           <button type="button" onClick={() => window.location.reload()} className="admin-primary-action">
             Retry
           </button>

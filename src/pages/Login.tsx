@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Eye, EyeOff, Lock, Mail, ShieldCheck } from 'lucide-react'
+import { ArrowLeft, ArrowUpRight, Eye, EyeOff, Lock, Mail, ShieldCheck } from 'lucide-react'
 import { toast } from 'sonner'
 import { useAuth } from '../hooks/useAuth'
 import logo from '../assets/logo.png'
@@ -28,6 +28,7 @@ export default function AdminLogin() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (isSubmitting || authLoading) return
     setFormError(null)
     setErrorField(null)
 
@@ -39,7 +40,7 @@ export default function AdminLogin() {
       return
     }
 
-    if (!EMAIL_PATTERN.test(email)) {
+    if (!EMAIL_PATTERN.test(email.trim())) {
       const message = 'Enter a valid email address.'
       setFormError(message)
       setErrorField('email')
@@ -56,45 +57,45 @@ export default function AdminLogin() {
     }
 
     setIsSubmitting(true)
-    const { error } = await login(email, password)
-    if (error) {
-      setFormError(error.message)
-      toast.error(error.message)
-      setIsSubmitting(false)
-    } else {
+    try {
+      const { error } = await login(email.trim(), password)
+      if (error) throw error
       toast.success('Welcome back!')
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unable to sign in. Please try again.'
+      setFormError(message)
+      toast.error(message)
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
   return (
     <main className="login-screen">
-      <div className="login-ambient" aria-hidden="true" />
-
+      <aside className="login-story" aria-labelledby="login-story-title">
+        <Link to="/" className="login-brand" aria-label="Asfi Ahamed — back to portfolio">
+          <img className="login-logo" src={logo} alt="" width={48} height={48} />
+          <span><strong>Asfi Ahamed</strong><span>PORTFOLIO STUDIO</span></span>
+        </Link>
+        <div className="login-story-copy">
+          <p className="login-story-eyebrow"><span aria-hidden="true" /> THE SPACE BEHIND THE WORK</p>
+          <h2 id="login-story-title">Keep building.<br /><em>Keep becoming.</em></h2>
+          <p>Your projects, your story, and everything that comes next. All in one place.</p>
+          <div className="login-story-index" aria-hidden="true"><span>01 / PROJECTS</span><span>02 / CONTENT</span><span>03 / IDENTITY</span></div>
+        </div>
+        <div className="login-story-footer"><span>ASFI AHAMED<br /><strong>A portfolio in progress.</strong></span><ArrowUpRight size={48} strokeWidth={1} aria-hidden="true" /></div>
+      </aside>
+      <div className="login-form-side">
       <section
         className="login-card"
         aria-labelledby="login-title"
         aria-describedby="login-description"
       >
         <header className="login-header">
-          <div className="login-brand-row">
-            <div className="login-brand">
-              <span className="login-logo" aria-hidden="true">
-                <img src={logo} alt="" />
-              </span>
-              <div>
-                <p className="login-product-name">Asfi Ahamed</p>
-                <p className="login-product-meta">Portfolio CMS</p>
-              </div>
-            </div>
-
-            <p className="login-security-note">
-              <ShieldCheck size={15} aria-hidden="true" />
-              Secure admin access
-            </p>
-          </div>
+          <p className="login-security-note"><ShieldCheck size={15} aria-hidden="true" /> ADMIN ACCESS</p>
 
           <div className="login-heading">
-            <h1 id="login-title" className="login-title">Welcome back</h1>
+            <h1 id="login-title" className="login-title">Welcome back<span>.</span></h1>
             <p id="login-description" className="login-description">
               Sign in to manage your portfolio content.
             </p>
@@ -190,7 +191,8 @@ export default function AdminLogin() {
             className="login-submit"
           >
             {isSubmitting && <span className="login-spinner" aria-hidden="true" />}
-            <span>{isSubmitting ? 'Signing in' : 'Sign in'}</span>
+            <span>{isSubmitting ? 'Signing in…' : authLoading ? 'Checking session…' : 'Enter your studio'}</span>
+            {!isSubmitting && <ArrowUpRight size={19} aria-hidden="true" />}
           </button>
 
           <span className="login-live-status" aria-live="polite" aria-atomic="true">
@@ -203,6 +205,8 @@ export default function AdminLogin() {
           Back to portfolio
         </Link>
       </section>
+      <p className="login-form-footer">Asfi Ahamed / Portfolio administration</p>
+      </div>
     </main>
   )
 }
