@@ -97,6 +97,11 @@ const hasHeroContent = (content: SiteContent | null) => Boolean(
 
 const getValidSocials = (socials: Social[]) => socials.filter((social) => isNotEmpty(social.href))
 
+const formatEducationDetail = (detail: string) => detail.replace(
+  /Island Rank:\s*424\s*\/\s*35,?197/,
+  'Island Rank: 424',
+)
+
 const getScrollBehavior = (): ScrollBehavior => (
   window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
 )
@@ -801,7 +806,7 @@ const PortfolioContent: FC<PortfolioContentProps> = ({ onRetry }) => {
                           <h4>{item.title}</h4>
                           <p className="pp-timeline-subtitle">{item.subtitle}</p>
                           {(item.details || []).length > 0 && (
-                            <ul>{item.details.map((detail) => <li key={detail}>{detail}</li>)}</ul>
+                            <ul>{item.details.map((detail) => <li key={detail}>{formatEducationDetail(detail)}</li>)}</ul>
                           )}
                         </article>
                       ))}
