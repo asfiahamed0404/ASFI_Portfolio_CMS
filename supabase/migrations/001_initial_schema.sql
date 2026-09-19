@@ -198,7 +198,7 @@ ON CONFLICT DO NOTHING;
 -- Insert education
 INSERT INTO education (title, subtitle, period, details, display_order) VALUES
 ('B.Sc. (Hons) Computer Science & Engineering', 'University of Moratuwa', 'Jun 2024 – Present', ARRAY['Specializing in Data Science & Engineering (DSE)', 'Current CGPA: 3.45 / 4.00'], 1),
-('G.C.E. Advanced Level', 'KM/Al-Ashraq National School, Nintavur', '2022', ARRAY['Combined Mathematics (A), Chemistry (A), Physics (A)', 'Z-Score: +2.3250 | Island Rank: 424 / 35,197'], 2),
+('G.C.E. Advanced Level', 'KM/Al-Ashraq National School, Nintavur', '2022', ARRAY['Combined Mathematics (A), Chemistry (A), Physics (A)', 'Z-Score: +2.3250 | Island Rank: 424'], 2),
 ('G.C.E. Ordinary Level', 'KM/Al-Ashraq National School, Nintavur', '2019', ARRAY['9 As including English, ICT, Maths, Science'], 3)
 ON CONFLICT DO NOTHING;
 
